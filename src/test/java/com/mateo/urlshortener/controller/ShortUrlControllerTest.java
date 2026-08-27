@@ -9,6 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -22,6 +23,14 @@ public class ShortUrlControllerTest {
     public void getShortUrl_whenExists_returnShortUrl() throws Exception {
         mvc.perform(get("/shorten/abc123")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.shortCode").value("abc123"));
+    }
+
+    @Test
+    public void getShortUrl_whenNotExists_returnNotFound() throws Exception {
+        mvc.perform(get("/shorten/xyz789")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
