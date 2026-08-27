@@ -3,11 +3,10 @@ package com.mateo.urlshortener.controller;
 import com.mateo.urlshortener.model.entity.ShortUrl;
 import com.mateo.urlshortener.service.ShortUrlService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -26,5 +25,15 @@ public class ShortUrlController {
         Optional<ShortUrl> shortUrl = shortUrlService.getShortUrl(shortCode);
         return shortUrl.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<ShortUrl> postShortUrl(@RequestBody String url, UriComponentsBuilder ucb) {
+        ShortUrl shortUrl = shortUrlService.createShortUrl(url.replace('"', ' ').trim());
+        URI location = ucb.
+                path("/shorten/{shortCode}")
+                .buildAndExpand(shortUrl.shortCode())
+                .toUri();
+        return ResponseEntity.created(location).body(shortUrl);
     }
 }

@@ -2,6 +2,7 @@ package com.mateo.urlshortener.controller;
 
 import com.mateo.urlshortener.model.entity.ShortUrl;
 import com.mateo.urlshortener.service.ShortUrlService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -11,12 +12,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ShortUrlController.class)
@@ -24,6 +26,9 @@ public class ShortUrlControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @MockitoBean
     private ShortUrlService shortUrlService;
@@ -51,5 +56,27 @@ public class ShortUrlControllerTest {
 
         mvc.perform(get("/shorten/xyz789").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void postShortUrl_whenValidUrl_returnCreated() throws Exception {
+        String url = "https://google.com";
+        String expectedLocation = "/shorten/gog999";
+        Mockito.when(shortUrlService.createShortUrl(url)).thenReturn(new ShortUrl(
+                1L,
+                url,
+                "gog999",
+                null,
+                null));
+
+        mvc.perform(post("/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andExpect(header().string("Location", Matchers.containsString(expectedLocation)))
+                .andExpect(jsonPath("$.url", Matchers.is(url)))
+                .andExpect(jsonPath("$.shortCode", Matchers.is("gog999")));
+
     }
 }
