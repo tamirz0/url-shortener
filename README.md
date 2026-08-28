@@ -82,7 +82,8 @@ Location="/shorten/abc123"
 
 > If the URL is invalid, returns a `400 BAD_REQUEST` response.
 >
-> If the URL already exists, returns a `303 SEE_OTHER` response with the existing short URL in the Location header.
+> If the URL already exists, it returns a `409 CONFLICT` response with the existing short URL in the Location
+> header. Based on that [comment](https://stackoverflow.com/a/70371989) on StackOverflow and the RFC 7231/9110.
 
 ## Retrieve Original URL
 

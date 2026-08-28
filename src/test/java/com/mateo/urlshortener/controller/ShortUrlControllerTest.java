@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -77,6 +78,29 @@ public class ShortUrlControllerTest {
                 .andExpect(header().string("Location", Matchers.containsString(expectedLocation)))
                 .andExpect(jsonPath("$.url", Matchers.is(url)))
                 .andExpect(jsonPath("$.shortCode", Matchers.is("gog999")));
+    }
 
+    @Test
+    public void postShortUrl_whenInvalidUrl_returnBadRequest() throws Exception {
+        String invalidUrl = "invalid-url";
+        Mockito.when(shortUrlService.createShortUrl(invalidUrl)).thenThrow(new IllegalArgumentException("Invalid URL"));
+
+        mvc.perform(post("/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUrl)))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason("Invalid URL"));
+    }
+
+    @Test
+    public void postShortUrl_whenUrlAlreadyExists_returnConflict() throws Exception {
+        String url = "https://google.com";
+        Mockito.when(shortUrlService.createShortUrl(url)).thenThrow(new DuplicateKeyException("Url already exists"));
+
+        mvc.perform(post("/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isConflict())
+                .andExpect(status().reason("Url already exists"));
     }
 }
