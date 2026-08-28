@@ -126,6 +126,8 @@ DELETE /shorten/abc123
 
 ## Get URL Statistics
 
+#TODO PENDING
+
 ### Request
 
 ```json lines
@@ -162,6 +164,8 @@ GET /abc123
 301 MOVED_PERMANENTLY
 Location: "https://www.google.com"
 ```
+
+> If the short URL does not exist, returns a `404 NOT_FOUND` response.
 
 ## Get List of All Short URLs
 
