@@ -17,8 +17,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -102,5 +101,23 @@ public class ShortUrlControllerTest {
                         .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isConflict())
                 .andExpect(status().reason("Url already exists"));
+    }
+
+    @Test
+    public void deleteShortUrl_whenExists_returnNoContent() throws Exception {
+        String shortCode = "abc123";
+        mvc.perform(delete("/shorten/" + shortCode))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    public void deleteShortUrl_whenNotExists_returnNotFound() throws Exception {
+        String shortCode = "xyz789";
+        Mockito.doThrow(new IllegalArgumentException("Url not found")).when(shortUrlService).deleteShortUrl(shortCode);
+
+        mvc.perform(delete("/shorten/" + shortCode))
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("Url not found"));
     }
 }

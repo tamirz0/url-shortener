@@ -8,4 +8,6 @@ public interface ShortUrlService {
     Optional<ShortUrl> getShortUrl(String shortCode);
 
     ShortUrl createShortUrl(String url);
+
+    void deleteShortUrl(String shortCode);
 }

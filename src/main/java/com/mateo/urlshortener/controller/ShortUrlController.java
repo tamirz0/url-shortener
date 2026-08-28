@@ -45,4 +45,14 @@ public class ShortUrlController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Url already exists");
         }
     }
+
+    @DeleteMapping("/{shortCode}")
+    public ResponseEntity<Void> deleteShortUrl(@PathVariable String shortCode) {
+        try {
+            shortUrlService.deleteShortUrl(shortCode);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
 }
