@@ -1,5 +1,6 @@
 package com.mateo.urlshortener.controller;
 
+import com.mateo.urlshortener.model.dto.PagedResponse;
 import com.mateo.urlshortener.model.entity.ShortUrl;
 import com.mateo.urlshortener.service.ShortUrlService;
 import org.hamcrest.Matchers;
@@ -9,12 +10,17 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,5 +125,41 @@ public class ShortUrlControllerTest {
         mvc.perform(delete("/shorten/" + shortCode))
                 .andExpect(status().isNotFound())
                 .andExpect(status().reason("Url not found"));
+    }
+
+    @Test
+    public void getListOfShortUrls_withQueryParameters_returnSortedAndPagedList() throws Exception {
+        List<ShortUrl> shortUrls = List.of(
+                new ShortUrl(3L, "https://www.example.com/another/long/url", "ghi789", LocalDateTime.of(2004, 2, 10, 15, 30), null),
+                new ShortUrl(2L, "https://www.example.com/some/long/url", "def456", LocalDateTime.of(2026, 9, 2, 10, 0), null),
+                new ShortUrl(1L, "https://google.com", "abc123", LocalDateTime.of(2026, 9, 3, 12, 0), null)
+        );
+        PagedResponse<ShortUrl> ascResponse = new PagedResponse<>(new PagedResponse.meta(1, 2, 25, 50), shortUrls);
+        PagedResponse<ShortUrl> descResponse = new PagedResponse<>(new PagedResponse.meta(1, 2, 25, 50), shortUrls.reversed());
+
+        Mockito.when(shortUrlService.getAllShortUrls(PageRequest.of(1, 2, Sort.by("createdAt").ascending())))
+                .thenReturn(ascResponse);
+
+        Mockito.when(shortUrlService.getAllShortUrls(PageRequest.of(1, 2, Sort.by("createdAt").descending())))
+                .thenReturn(descResponse);
+
+        ResultActions resultActions = mvc.perform(get("/shorten?page=1&size=2&sort=createdAt,asc"));
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.meta.page").value(1))
+                .andExpect(jsonPath("$.meta.size").value(2))
+                .andExpect(jsonPath("$.meta.totalPages").value(25))
+                .andExpect(jsonPath("$.meta.totalElements").value(50))
+                .andExpect(jsonPath("$.data", Matchers.hasSize(shortUrls.size())))
+                .andExpect(jsonPath("$.data[*].id", Matchers.contains(3, 2, 1)));
+
+        mvc.perform(get("/shorten?page=1&size=2&sort=createdAt,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.meta.page").value(1))
+                .andExpect(jsonPath("$.meta.size").value(2))
+                .andExpect(jsonPath("$.meta.totalPages").value(25))
+                .andExpect(jsonPath("$.meta.totalElements").value(50))
+                .andExpect(jsonPath("$.data", Matchers.hasSize(shortUrls.size())))
+                .andExpect(jsonPath("$.data[*].id", Matchers.contains(1, 2, 3)));
     }
 }

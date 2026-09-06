@@ -1,8 +1,12 @@
 package com.mateo.urlshortener.controller;
 
+import com.mateo.urlshortener.model.dto.PagedResponse;
 import com.mateo.urlshortener.model.entity.ShortUrl;
 import com.mateo.urlshortener.service.ShortUrlService;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,5 +58,16 @@ public class ShortUrlController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<PagedResponse<ShortUrl>> getAllShortUrls(
+            @PageableDefault(
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        PagedResponse<ShortUrl> shortUrls = shortUrlService.getAllShortUrls(pageable);
+        return ResponseEntity.ok(shortUrls);
     }
 }
