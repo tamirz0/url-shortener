@@ -3,7 +3,7 @@ package com.mateo.urlshortener.model.entity;
 import java.time.LocalDateTime;
 
 public record ShortUrl
-        (long id,
+        (Long id,
          String url,
          String shortCode,
          LocalDateTime createdAt,

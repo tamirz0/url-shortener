@@ -17,7 +17,6 @@ class RedirectShortUrlController {
 
     ShortUrlService shortUrlService;
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public RedirectShortUrlController(ShortUrlService shortUrlService) {
         this.shortUrlService = shortUrlService;
     }
