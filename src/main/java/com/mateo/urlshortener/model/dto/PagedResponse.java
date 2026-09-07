@@ -7,7 +7,7 @@ public record PagedResponse<T>(PagedResponse.meta meta, List<T> data) {
             int page,
             int size,
             int totalPages,
-            int totalElements
+            long totalElements
     ) {
     }
 }
