@@ -15,10 +15,12 @@ import java.util.Optional;
 class ShortUrlServiceImpl implements ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
+    private final TokenGenerator tokenGenerator;
 
 
-    public ShortUrlServiceImpl(ShortUrlRepository shortUrlRepository) {
+    public ShortUrlServiceImpl(ShortUrlRepository shortUrlRepository, TokenGenerator tokenGenerator) {
         this.shortUrlRepository = shortUrlRepository;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
@@ -29,7 +31,7 @@ class ShortUrlServiceImpl implements ShortUrlService {
     @Override
     public ShortUrl createShortUrl(String url) {
         String cleanedUrl = cleanUrl(url);
-        String shortCode = generateShortCode(cleanedUrl);
+        String shortCode = tokenGenerator.generate();
         ShortUrl shortUrl = new ShortUrl(null, cleanedUrl, shortCode, LocalDateTime.now(), null);
 
         return shortUrlRepository.save(shortUrl);
@@ -59,8 +61,4 @@ class ShortUrlServiceImpl implements ShortUrlService {
         return url.trim();
     }
 
-    //TODO
-    private String generateShortCode(String url) {
-        return String.valueOf(url.hashCode());
-    }
 }
