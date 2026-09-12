@@ -16,11 +16,9 @@ class ShortUrlServiceImpl implements ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
 
-    private final PagedResponseMapper pagedResponseMapper;
 
-    public ShortUrlServiceImpl(ShortUrlRepository shortUrlRepository, PagedResponseMapper pagedResponseMapper) {
+    public ShortUrlServiceImpl(ShortUrlRepository shortUrlRepository) {
         this.shortUrlRepository = shortUrlRepository;
-        this.pagedResponseMapper = pagedResponseMapper;
     }
 
     @Override
@@ -50,7 +48,7 @@ class ShortUrlServiceImpl implements ShortUrlService {
     @Override
     public PagedResponse<ShortUrl> getAllShortUrls(Pageable pageable) {
         Page<ShortUrl> page = shortUrlRepository.findAll(pageable);
-        return pagedResponseMapper.toPagedResponse(page);
+        return PagedResponseMapper.toPagedResponse(page);
     }
 
     //TODO

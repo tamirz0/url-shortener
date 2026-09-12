@@ -2,8 +2,8 @@ package com.mateo.urlshortener.model.dto;
 
 import java.util.List;
 
-public record PagedResponse<T>(PagedResponse.meta meta, List<T> data) {
-    public record meta(
+public record PagedResponse<T>(Meta meta, List<T> data) {
+    public record Meta(
             int page,
             int size,
             int totalPages,

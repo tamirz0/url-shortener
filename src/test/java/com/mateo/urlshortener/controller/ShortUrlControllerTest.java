@@ -134,8 +134,8 @@ public class ShortUrlControllerTest {
                 new ShortUrl(2L, "https://www.example.com/some/long/url", "def456", LocalDateTime.of(2026, 9, 2, 10, 0), null),
                 new ShortUrl(1L, "https://google.com", "abc123", LocalDateTime.of(2026, 9, 3, 12, 0), null)
         );
-        PagedResponse<ShortUrl> ascResponse = new PagedResponse<>(new PagedResponse.meta(1, 2, 25, 50), shortUrls);
-        PagedResponse<ShortUrl> descResponse = new PagedResponse<>(new PagedResponse.meta(1, 2, 25, 50), shortUrls.reversed());
+        PagedResponse<ShortUrl> ascResponse = new PagedResponse<>(new PagedResponse.Meta(1, 2, 25, 50), shortUrls);
+        PagedResponse<ShortUrl> descResponse = new PagedResponse<>(new PagedResponse.Meta(1, 2, 25, 50), shortUrls.reversed());
 
         Mockito.when(shortUrlService.getAllShortUrls(PageRequest.of(1, 2, Sort.by("createdAt").ascending())))
                 .thenReturn(ascResponse);
