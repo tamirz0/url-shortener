@@ -4,6 +4,7 @@ import com.mateo.urlshortener.mapper.PagedResponseMapper;
 import com.mateo.urlshortener.model.dto.PagedResponse;
 import com.mateo.urlshortener.model.entity.ShortUrl;
 import com.mateo.urlshortener.repository.ShortUrlRepository;
+import com.mateo.urlshortener.util.TokenGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
