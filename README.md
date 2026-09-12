@@ -36,8 +36,21 @@ should redirect to the original URL when accessed. The application should also k
 short URL has been accessed.
 
 When the long URL is provided, the application should clean it (to avoid unnecessary characters) up and validate it (if
-exists in the table returns the same). To generate the short URL, the application must use an algorithm #TODO not
-determined yet.
+exists in the table returns the same). To generate the short URL, the application generate a random token of 12 bytes
+(96 bits) and encode it in base62 (0-9, a-z, A-Z).
+
+# Algorithm Decision
+
+- I picked the random token generation because it's simple, fast and secure enough for this project.
+- The token is generated using `SecureRandom` class from Java, which is a cryptographically strong random number
+  generator.
+- The token have a length of 12 bytes (96 bits) so the probability of collision is very low (1 in 2^96).
+- The base 62 encoding is used to make the token shorter (12 bytes = 17 characters in base 62). To avoid special
+  characters that can cause issues in URLs the 64 base encoding was avoided.
+- To avoid collisions:
+    - The application checks if the generated token already exists in the database. If it does, it generates a new token
+      until a unique one is found.
+    - The token generation is done from a combination of 4 bytes of timestamp and 8 secure random bytes.
 
 # Architecture
 
