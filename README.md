@@ -50,7 +50,6 @@ exists in the table returns the same). To generate the short URL, the applicatio
 - To avoid collisions:
     - The application checks if the generated token already exists in the database. If it does, it generates a new token
       until a unique one is found.
-    - The token generation is done from a combination of 4 bytes of timestamp and 8 secure random bytes.
 
 # Architecture
 

@@ -21,7 +21,7 @@ public class Base62TokenGenerator implements TokenGenerator {
     }
 
     private byte[] getRandomBytes() {
-        byte[] bytes = new byte[Base62TokenGenerator.TOKEN_LENGTH];
+        byte[] bytes = new byte[TOKEN_LENGTH];
         RANDOM.nextBytes(bytes);
         return bytes;
     }
