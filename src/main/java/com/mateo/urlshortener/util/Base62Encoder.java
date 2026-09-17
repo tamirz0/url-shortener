@@ -6,6 +6,10 @@ class Base62Encoder {
     private static final String BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     String toBase62(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return "";
+        }
+
         BigInteger number = new BigInteger(bytes);
         StringBuilder sb = new StringBuilder();
         BigInteger base = BigInteger.valueOf(BASE62.length());
