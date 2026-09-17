@@ -10,7 +10,7 @@ class Base62Encoder {
             return "";
         }
 
-        BigInteger number = new BigInteger(bytes);
+        BigInteger number = new BigInteger(1, bytes);
         StringBuilder sb = new StringBuilder();
         BigInteger base = BigInteger.valueOf(BASE62.length());
 
